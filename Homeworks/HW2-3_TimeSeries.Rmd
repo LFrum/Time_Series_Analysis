@@ -1,0 +1,56 @@
+---
+title: "HW2"
+author: "Lince Rumainum"
+date: "January 31, 2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+# Lince Rumainum
+# Time Series Analysis
+# HW2
+
+# libraries list
+#install.packages("DataCombine")
+#install.packages("nlme")
+library(DataCombine) # for slide function, i.e.: x_t-1
+library(mgcv)
+
+###############################################################################################################
+# Problem 3
+###############################################################################################################
+
+varArray <- c(sqrt(0.1), sqrt(0.5), sqrt(1.0), sqrt(2.0), sqrt(5.0))
+colVar <- c("red","green","blue","yellow","gray")
+t <- seq(1, 100, by = 1)
+
+for (s in 1:length(varArray)){
+  # Create 100 samples of x_t ~ iid N(0,1)
+  x_t <- rnorm(t, mean = 0, sd = varArray[s])
+  if (s == 1){
+    plot(t, x_t, type = "l", col= colVar[s], xlim=c(0,length(t)), ylim=c(-5,5))
+  }
+  else{
+    lines(t, x_t, col= colVar[s], xlim=c(0,length(t)), ylim=c(-5,5))
+  }
+  legend("bottomright",title = "Sigma-Squared Values", c("0.1", "0.5", "1.0", "2.0", "5.0"),fill=terrain.colors(5), horiz=TRUE)
+}
+
+# From the plot, it shows that for different value of sigma-squared, the plot varies around its value.
+# For example, for sigma-squared = 2.0 (blue line), the function flactuates approximately between -2.0 and 2.0 while
+# for sigma-squared = 0.1 (red line), it flactuates approximately between -0.1 and 0.1.
+# The plot also shows that each of the five different sigma-squared values, they all still have approximately sample mean values of 0.
+
+# END OF PROBLEM #3
+###############################################################################################################
+```

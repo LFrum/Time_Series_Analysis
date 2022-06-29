@@ -1,0 +1,140 @@
+---
+title: "HW2"
+author: "Lince Rumainum"
+date: "January 31, 2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+# Lince Rumainum
+# Time Series Analysis
+# HW2
+
+# libraries list
+#install.packages("DataCombine")
+#install.packages("nlme")
+library(DataCombine) # for slide function, i.e.: x_t-1
+library(mgcv)
+
+###############################################################################################################
+# Problem 1
+###############################################################################################################
+
+# Create 100 samples of x_t ~ iid N(0,1)
+sampleSize = 100
+
+# Create a main data frame for problem 1 with i = 1 to 100
+mainDf1 <- data.frame(i = seq(0, sampleSize, by = 1))
+
+# Obtain 100 estimates of mean of x_i and mean of sigmasquare_i from 100 different x_t ~ iid N(0,1) values
+for(k in 1:100){
+  # Create 100 samples of x_t ~ iid N(0,1)
+  x_i<- rnorm(sampleSize, mean = 0, sd = 1)
+  # Calculate the mean and the mean variance of the samples
+  mainDf1$meanVal[k] <- mean(x_i)
+  mainDf1$meanVarVal[k] <- var(x_i)
+}
+mainDf1
+# Compute the mean, variance of x_i bar for i = 1 to 100
+meanX <- mean(mainDf1$meanVal)
+meanX
+varX <- var(mainDf1$meanVal)
+varX
+
+# Compute the mean, variance of variance_i bar for i = 1 to 100
+meanVar <- mean(mainDf1$meanVarVal)
+meanVar
+varVar <- var(mainDf1$meanVarVal)
+varVar
+
+# END OF PROBLEM #1
+
+###############################################################################################################
+# Problem 2 : 
+###############################################################################################################
+
+# define: x_t = epsilon_t + 0.5*epsilon_t-1 called MA (1) process
+
+rho_0 <- 1
+rho_1 <- (0.5/(1+(0.5^2)))
+rho_i <- 0 # for i > 1
+
+# verified in module 2.3
+sigma_ii = 1 + 2*(rho_1^2) # for all i > 1
+
+# Create time sequences from 1 to 500
+mainDf <- data.frame(t = seq(1, 500, by = 1))
+
+# Create main data frame for iid epsilon_t values (500 samples)
+mainDf$e_t <- rnorm(500, mean = 0, sd = 1)
+
+# Create epsilon_t-1
+mainDf <- slide(mainDf,"e_t", "t", NewVar="etLag1", slideBy = -1)
+
+# Create time sequences from 0 to 500
+xDf <- data.frame(t = seq(1, 500, by = 1))
+
+
+# Create the rest of the table for x_t
+for(i in 1:500){
+  # Calculate data of x_t
+  xDf$x_t[i] <- mainDf$e_t[i] + 0.5* mainDf$etLag1[i]
+}
+
+# Create x_t-1 and x_t-2
+xDf <- slide(xDf,"x_t", "t", NewVar="xtLag1", slideBy = -1)
+xDf <- slide(xDf,"x_t","t",NewVar="xtLag2", slideBy = -2)
+
+# Line plot x_t vs x_t-1
+plot(xDf$xtLag1, xDf$x_t, type = "l", col = "red")
+# Line plot x_t vs x_t-2
+plot(xDf$xtLag2, xDf$x_t, type = "l", col = "green")
+# Line plot x_t vs t
+plot(xDf$t, xDf$x_t, type = "l", col = "blue")
+
+#mean, variance, and autocorrelation 
+mean(xDf$x_t)
+var(xDf$x_t)
+acf (xDf$x_t[2:500], lag.max = 2, type=c("correlation"),plot=TRUE) 
+
+# END OF PROBLEM #2
+
+
+###############################################################################################################
+# Problem 3
+###############################################################################################################
+
+varArray <- c(sqrt(0.1), sqrt(0.5), sqrt(1.0), sqrt(2.0), sqrt(5.0))
+colVar <- c("red","green","blue","yellow","gray")
+t <- seq(1, 100, by = 1)
+
+for (s in 1:length(varArray)){
+  # Create 100 samples of x_t ~ iid N(0,1)
+  x_t <- rnorm(t, mean = 0, sd = varArray[s])
+  if (s == 1){
+    plot(t, x_t, type = "l", col= colVar[s], xlim=c(0,length(t)), ylim=c(-5,5))
+  }
+  else{
+    lines(t, x_t, col= colVar[s], xlim=c(0,length(t)), ylim=c(-5,5))
+  }
+  legend("bottomright",title = "Sigma-Squared Values", c("0.1", "0.5", "1.0", "2.0", "5.0"),fill=terrain.colors(5), horiz=TRUE)
+}
+
+# From the plot, it shows that for different value of sigma-squared, the plot varies around its value.
+# For example, for sigma-squared = 2.0 (blue line), the function flactuates approximately between -2.0 and 2.0 while
+# for sigma-squared = 0.1 (red line), it flactuates approximately between -0.1 and 0.1.
+# The plot also shows that each of the five different sigma-squared values, they all still have approximately sample mean values of 0.
+
+# END OF PROBLEM #3
+###############################################################################################################
+```

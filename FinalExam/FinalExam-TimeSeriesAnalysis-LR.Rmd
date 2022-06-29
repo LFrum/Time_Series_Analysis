@@ -1,0 +1,449 @@
+---
+title: "FinalExam-TimeSeriesAnalysis-LR"
+author: "Lince Rumainum"
+date: "May 1, 2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+#-------------------------------------------------------------------
+# Problem 1-1
+# from equation x_t = 0.5 + 0.1 x_t-1 + epsilon_t
+# we calculated ACF value from the derived function of AR(1) model
+# and then plot those values
+#-------------------------------------------------------------------
+# Create time sequences from 0 to 1000
+mainDf1_1 <- data.frame(t = seq(1, 1000, by = 1))
+mainDf1_1$epsilon_t <- rnorm(1000, mean = 0, sd = 1)
+#mainDf1_1$x_t[1] <- 0.5 +  mainDf1_1$epsilon_t[1]
+mainDf1_1$x_t[1] <- 0
+
+# set constants for phi
+# from equation x_t = 0.5 + 0.1 x_t-1 + epsilon_t
+phi <- 0.1
+
+# Create the rest of the table for x_t
+for(i in 2:length(mainDf1_1$t)){
+  # Calculate data of x_t
+  mainDf1_1$x_t[i] <- 0.5 + (0.1 * mainDf1_1$x_t[i-1]) +  mainDf1_1$epsilon_t[i]
+}
+
+# plot x_t vs t
+plot(mainDf1_1$t, mainDf1_1$x_t, type = "l", col= colors()[30], main="x_t vs t - Problem 1-1", xlab="t", ylab="x_t")  
+
+df11_acf = acf(mainDf1_1$x_t, lag.max = 100, type = c("correlation"), plot = TRUE, main = "ACF value for 1-1", na.action = na.contiguous)
+df11_acf$acf[1] # ACF at j = 0
+df11_acf$acf[2] # ACF at j = 1
+df11_acf$acf[3] # ACF at j = 2
+
+#-------------------------------------------------------------------
+# theorical ACF:
+# at j = 0, rho(0) = 1
+# at j = 1, rho(1) = 0.1
+# at j = 2, rho(2) = 0.01
+# END OF PROBLEM #1-1
+#-------------------------------------------------------------------
+
+#-------------------------------------------------------------------
+# Problem 1-2
+# from equation x_t = 0.5 + 0.1 x_t-4 + epsilon_t
+# we calculated ACF value from the derived function of AR(4) model
+# and then plot those values
+#-------------------------------------------------------------------
+# Create time sequences from 0 to 1000
+mainDf1_2 <- data.frame(t = seq(1, 1000, by = 1))
+mainDf1_2$epsilon_t <- rnorm(1000, mean = 0, sd = 1)
+#mainDf1_2$x_t[1] <- 0.5 +  mainDf1$epsilon_t[1]
+mainDf1_2$x_t[1:4] <- 0
+
+# Create the rest of the table for x_t
+for(i in 5:length(mainDf1_2$t)){
+  # Calculate data of x_t
+  mainDf1_2$x_t[i] <- 0.5 + (0.1 * mainDf1_2$x_t[i-4]) +  mainDf1_2$epsilon_t[i]
+}
+
+# plot x_t vs t
+plot(mainDf1_2$t, mainDf1_2$x_t, type = "l", col= colors()[30], main="x_t vs t - Problem 1-2", xlab="t", ylab="x_t")  
+
+df12_acf = acf(mainDf1_2$x_t, lag.max = 100, type = c("correlation"), plot = TRUE,  main = "ACF value for 1-2", na.action = na.contiguous, demean = TRUE)
+df12_acf$acf[1] # ACF at j = 0
+df12_acf$acf[5] # ACF at j = 4
+
+#-------------------------------------------------------------------
+# theorical ACF:
+# at j = 0, rho(0) = 1
+# at j = 4, rho(4) = 0.1
+# END OF PROBLEM #1-2
+#-------------------------------------------------------------------
+
+#-------------------------------------------------------------------
+# Problem 1-3
+# from equation x_t = 0.5 + 0.1 x_t-1 + 0.1 x_t-4 + epsilon_t
+# we calculated ACF value from the derived function of AR(1) model
+# and then plot those values
+#-------------------------------------------------------------------
+# Create time sequences from 0 to 1000
+mainDf1_3 <- data.frame(t = seq(1, 1000, by = 1))
+mainDf1_3$epsilon_t <- rnorm(1000, mean = 0, sd = 1)
+#mainDf1_3$x_t[1] <- 0.5 +  mainDf1_3$epsilon_t[1]
+mainDf1_3$x_t[1:4] <- 0
+
+# Create the rest of the table for x_t
+for(i in 5:length(mainDf1_3$t)){
+  # Calculate data of x_t
+  mainDf1_3$x_t[i] <- 0.5 + (0.1 * mainDf1_3$x_t[i-1]) + (0.1 * mainDf1_3$x_t[i-4]) +  mainDf1_3$epsilon_t[i]
+}
+
+# plot x_t vs t
+plot(mainDf1_3$t, mainDf1_3$x_t, type = "l", col= colors()[30], main="x_t vs t - Problem 1-3", xlab="t", ylab="x_t")  
+# plot the acf
+df13_acf = acf(mainDf1_3$x_t, lag.max = 100, type = c("correlation"), plot = TRUE,  main = "ACF value for 1-3", na.action = na.contiguous)
+df13_acf$acf[1] # ACF at j = 0
+df13_acf$acf[2] # ACF at j = 1
+df13_acf$acf[5] # ACF at j = 4
+#-------------------------------------------------------------------
+# theorical ACF:
+# at j = 0, rho(0) = 1
+# at j = 1, rho(1) = 0.1011236
+# at j = 4, rho(4) = 0.1011236
+# END OF PROBLEM #1-3
+#-------------------------------------------------------------------
+
+
+#-----------------------------------------------------------------------------------------------------------------
+# Problem #2
+# Download three time series from the website 
+# that contain trend and seasonality
+
+# data URLs: 
+# https://www.rba.gov.au/statistics/xls/unemployment-rate-by-horizon.xls
+# http://www.bom.gov.au/tmp/cdio/IDCJAC0010_066196_2017.pdf - data no longer available
+# http://www.bom.gov.au/tmp/cdio/IDCJAC0010_066196_2016.pdf
+
+# outside sources: (reading xls and pdf file)
+# https://stackoverflow.com/questions/41368628/read-excel-file-from-a-url-using-the-readxl-package
+# https://datascienceplus.com/extracting-tables-from-pdfs-in-r-using-the-tabulizer-package/
+#-----------------------------------------------------------------------------------------------------------------
+#list of libraries needed for problem #2
+#install.packages("httr")
+#install.packages('tabulizer')
+#install.packages('forecast')
+library(DataCombine) # for slide function, i.e.: x_t-1
+library(mgcv)
+library(readxl) # for reading excel file
+library(httr)
+packageVersion("readxl")
+library(tabulizer) # for reading pdf file
+library(dplyr)
+library(forecast)
+
+# First time series is the unemployment rate data from the Australian government website
+dataURL <- "https://www.rba.gov.au/statistics/xls/unemployment-rate-by-horizon.xls"
+GET(dataURL, write_disk(tf <- tempfile(fileext = ".xls")))
+
+df_unemployment <- read_excel(tf, sheet = 3, col_names = TRUE, col_types = NULL, na = "", skip = 1)
+df_unemployment$`Forecast date` <- as.Date(df_unemployment$`Forecast date`)
+
+# Get unemployment data from June 1993 to November 2008
+t <- df_unemployment$`Forecast date`[18:80]
+unemploymentRate <- df_unemployment$t[18:80]
+
+# Plot the original series, x_t
+plot(t,unemploymentRate, type = "l", main="Unemployment Rate vs Time Graph", xaxt = "n", 
+     xlab="Time, t", ylab="Unemployment Rate (%), x_t")
+# Fix the x-axis so it would show dates
+axis(1, df_unemployment$`Forecast date`, format(df_unemployment$`Forecast date`), cex.axis = 0.6)
+
+# Create a new dataframe without the unnecessary data
+df_unemployment_main <- data.frame(t)
+for (i in 1:length(t)){
+  df_unemployment_main$x_t[i] <- unemploymentRate[i]
+}
+
+# removing the seasonality in x_t
+df_unemployment_main<- slide(df_unemployment_main,"x_t", "t", NewVar="xtLag1", slideBy = -1) 
+
+# removing the seasonality from x_t
+for (i in 1:length(t)){
+  if (!is.na(df_unemployment_main$x_t[i]) & !is.na(df_unemployment_main$xtLag1[i])){
+    df_unemployment_main$y_t[i] <- df_unemployment_main$x_t[i] - df_unemployment_main$xtLag1[i]
+  }
+  else{
+    df_unemployment_main$y_t[i] <- NA
+  }
+}
+
+# plot yt vs t
+y_t <- df_unemployment_main$y_t
+t <- df_unemployment_main$t
+
+# Plot z_t after removing the trend in y_t
+
+df_unemployment_main <- slide(df_unemployment_main,"y_t", "t", NewVar="ytLag1", slideBy = -1)
+
+# removing the trend in y_t
+for (i in 1:length(t)){
+  df_unemployment_main$z_t[i] <- df_unemployment_main$y_t[i] - df_unemployment_main$ytLag1[i]
+}
+
+# plot zt vs t
+z_t <- df_unemployment_main$z_t
+t <- df_unemployment_main$t
+plot(t, z_t, type = "l", col= colors()[30], main="Detrended and deseasonalized \nUnemployment Data", xlab="Time, t", ylab="z_t")
+
+#Get the ACF and PACF
+zt_acf <- df_unemployment_main$z_t[3:length(t)]
+acf (zt_acf, lag.max = length(t), type=c("correlation"),plot=TRUE, main = "Sample Autocorrelation Function \nof the Unemployment Data") 
+pacf (zt_acf, lag = length(zt_acf) - 1, plot = TRUE, main = "Sample Partial Autocorrelation Function \nof the Unemployment Data")
+
+# estimate model and calculate aic & aicc
+arimaModel1 <- forecast::auto.arima(df_unemployment_main$x_t, d = NA, D = NA, max.p = 5, max.q = 5, max.P = 2, max.Q = 2, max.order = 5, max.d = 2, max.D = 1, start.p = 2, start.q = 2, start.P = 1, start.Q = 1, stationary = FALSE, seasonal = TRUE, ic = c("aicc", "aic","bic"))
+
+arimaModel1
+
+# calculate residual
+cf <- coef(arimaModel1)
+arimaModel1_residuals <- residuals(arimaModel1)
+acf (arimaModel1_residuals, lag.max = length(t), type=c("correlation"),na.action=na.pass,plot=TRUE, main = "Sample Autocorrelation Function \nof the residual Data")
+
+
+#second model
+arimaModel1_2 <-forecast::auto.arima(df_unemployment_main$x_t, d = NA, D = NA, max.p = 5, max.q = 25, max.P = 2, max.Q = 2, max.order = 100, max.d = 2, max.D = 1, start.p = 2, start.q = 12, start.P = 1, start.Q = 1, stationary = FALSE, seasonal = TRUE, ic = c("aicc", "aic","bic"))
+
+arimaModel1_2
+
+cf <- coef(arimaModel1_2)
+arimaModel12_residuals <- residuals(arimaModel1_2)
+acf (arimaModel32_residuals, lag.max = length(t), type=c("correlation"),na.action=na.pass,plot=TRUE, main = "Sample Autocorrelation Function \nof the residual Data")
+#-------------------------------------------------------------------------------------------------------------------
+# END OF UNEMPLOYMENT DATA
+#-------------------------------------------------------------------------------------------------------------------
+# Second time series is the rainfall monthly data on 2013-2018 from the Australian government website
+
+# montly rainfall in Sidney
+dataURL2 <- 'http://www.bom.gov.au/tmp/cdio/IDCJAC0001_033106.pdf'
+
+# Extract the table
+out <- extract_tables(dataURL2)
+
+df_rainfall <- do.call(rbind, out[-length(out)])
+
+# table data start at fourth row
+df_rainfall <- as.data.frame(df_rainfall[4:nrow(df_rainfall)-1, ], stringsAsFactors=F)
+levels(droplevels((df_rainfall[,]))) # drop levels from the dataframe
+
+# Column names
+headers <- c('Year', 'Jan', 'Feb', 'Mar', 'Apr', 'May','Jun', 
+             'Jul', 'Aug', 'Sep','Oct','Nov','Dec')
+
+# Apply custom column names
+names(df_rainfall) <- headers
+
+
+# getting data from 2003 to 2018
+startYear <- 2003
+endYear <- 2018
+totalYear <- endYear - startYear + 1
+df_rainfall_main <- data.frame(t = seq(1, totalYear*12, by = 1))
+
+#current row of rainfall for the new main dataframe
+currRFRow <- 1
+
+# goes from Jan column to Dec column
+for(currCol in 2:13) {
+  # iterate through row 2 to 17 and put the data into new main dataframe
+  for (currRow in 2:nrow(df_rainfall)){
+    df_rainfall_main$x_t[currRFRow] <- df_rainfall[currRow,currCol]
+    currRFRow = currRFRow + 1
+  }
+}
+
+t <- df_rainfall_main$t
+rainfall <- df_rainfall_main$x_t
+
+#convert the temperature data from character type to numeric type
+df_rainfall_main$x_t = as.numeric(as.character(df_rainfall_main$x_t))
+
+# Plot the original series, x_t
+dates = seq(as.Date("2003-01-01"), by = "month", along = t)
+plot(dates,rainfall, type = "l", main="Rainfall vs Time \nin Sydney Graph", xlab="Time (Year), t", ylab="Rainfall (mm), x_t")
+
+# removing the seasonality in x_t
+df_rainfall_main<- slide(df_rainfall_main,"x_t", "t", NewVar="xtLag1", slideBy = -1) 
+
+# removing the trend in y_t
+for (i in 1:length(t)){
+  df_rainfall_main$y_t[i] <- df_rainfall_main$x_t[i] - df_rainfall_main$xtLag1[i]
+}
+y_t <- df_rainfall_main$y_t
+t <- df_rainfall_main$t
+
+# Plot z_t after removing the trend in y_t
+df_rainfall_main <- slide(df_rainfall_main,"y_t", "t", NewVar="ytLag1", slideBy = -1)
+
+# removing the trend in y_t
+for (i in 1:length(t)){
+  df_rainfall_main$z_t[i] <- df_rainfall_main$y_t[i] - df_rainfall_main$ytLag1[i]
+}
+
+# plot zt vs t
+z_t <- df_rainfall_main$z_t
+t <- df_rainfall_main$t
+plot(t, z_t, type = "l", col= colors()[30],main="Detrended and deseasonalized Rainfall Data", xlab="Time, t", ylab="z_t")
+
+#Get the ACF and PACF
+zt_acf <- df_rainfall_main$z_t[3:length(t)]
+acf (zt_acf, lag.max = length(t), type=c("correlation"),plot=TRUE, main = "Sample Autocorrelation Function \nof the Rainfall Data") 
+pacf (zt_acf, lag = length(zt_acf) - 1, plot = TRUE, main = "Sample Partial Autocorrelation Function \nof the Rainfall Data")
+
+# estimate model and calculate aic & aicc
+arimaModel2 <- forecast::auto.arima(df_rainfall_main$x_t, d = NA, D = NA, max.p = 5, max.q = 5, max.P = 2, max.Q = 2, max.order = 5, max.d = 2, max.D = 1, start.p = 2, start.q = 2, start.P = 1, start.Q = 1, stationary = FALSE, seasonal = TRUE, ic = c("aicc", "aic","bic"))
+
+arimaModel2
+
+# calculate residual
+cf <- coef(arimaModel2)
+arimaModel2_residuals <- residuals(arimaModel2)
+acf (arimaModel2_residuals, lag.max = length(t), type=c("correlation"),na.action=na.pass,plot=TRUE, main = "Sample Autocorrelation Function \nof the residual Data")
+
+
+#second model
+arimaModel2_2 <-forecast::auto.arima(df_rainfall_main$x_t, d = NA, D = NA, max.p = 5, max.q = 25, max.P = 2, max.Q = 2, max.order = 100, max.d = 2, max.D = 1, start.p = 2, start.q = 12, start.P = 1, start.Q = 1, stationary = FALSE, seasonal = TRUE, ic = c("aicc", "aic","bic"))
+
+arimaModel2_2
+
+cf <- coef(arimaModel2_2)
+arimaModel22_residuals <- residuals(arimaModel2_2)
+acf (arimaModel22_residuals, lag.max = length(t), type=c("correlation"),na.action=na.pass,plot=TRUE, main = "Sample Autocorrelation Function \nof the residual Data")
+#-------------------------------------------------------------------
+
+#-------------------------------------------------------------------
+
+# Third time series is the temperature data on 2018 in New South Wales
+dataURL3 <- 'http://www.bom.gov.au/tmp/cdio/IDCJAC0010_052088_2018.pdf'
+
+# Extract the table
+out <- extract_tables(dataURL3)
+
+df_temperature <- do.call(rbind, out[-length(out)])
+
+# table data start at second row
+df_temperature <- as.data.frame(df_temperature[2:nrow(df_temperature), ], stringsAsFactors=F)
+levels(droplevels((df_temperature[,]))) # drop levels from the dataframe
+
+# Column names
+headers <- c('2018', 'Jan', 'Feb', 'Mar', 'Apr', 'May','Jun', 
+             'Jul', 'Aug', 'Sep','Oct','Nov','Dec')
+
+# Apply custom column names
+names(df_temperature) <- headers
+
+# Create a new dataframe without the unnecessary data
+# Data from 1 January 2018 to 31 August 2018 (Day 1 to Day 243)
+maxDay <- 243
+df_temperature_main <- data.frame(t = seq(1, maxDay, by = 1))
+
+#current row of temperature for the new main dataframe
+currTempRow <- 1
+
+# goes from Jan column to Aug column
+for(currCol in 2:9) {
+  # iterate through row 1 to 31 and put the data into new main dataframe
+  for (currRow in 1:nrow(df_temperature)){
+    if ((df_temperature[currRow,currCol]!= "") & currRow <= 31){
+      df_temperature_main$x_t[currTempRow] <- df_temperature[currRow,currCol]
+      currTempRow = currTempRow + 1
+    }
+    else if ((currCol == 2 || currCol == 4 || currCol == 6 || currCol == 8 || currCol == 9)
+             & (df_temperature[currRow,currCol] == "") & currRow <= 31){
+      df_temperature_main$x_t[currTempRow]  <- NA
+      currTempRow = currTempRow + 1
+    }
+    else if ((currCol == 5 || currCol == 7) & (df_temperature[currRow,currCol] == "") & currRow <= 30){
+      df_temperature_main$x_t[currTempRow]  <- NA
+      currTempRow = currTempRow + 1
+    }
+    else if ((currCol == 3) & (df_temperature[currRow,currCol] == "") & currRow <= 28){
+      df_temperature_main$x_t[currTempRow]  <- NA
+      currTempRow = currTempRow + 1
+    }
+  }
+}
+
+t <- df_temperature_main$t[1:maxDay]
+temperature <- df_temperature_main$x_t[1:maxDay]
+
+#convert the temperature data from character type to numeric type
+df_temperature_main$x_t = as.numeric(as.character(df_temperature_main$x_t))
+
+# Plot the original series, x_t
+dates = seq(as.Date("2018-01-01"), by = "day", along = t)
+plot(dates,temperature, type = "l", main="Temperature in New South wales \nin January through August of 2018", xlab="Time (Day), t", ylab="Temperature (C), x_t")
+
+# Plot y_t after removing the seasonality in x_t
+df_temperature_main<- slide(df_temperature_main,"x_t", "t", NewVar="xtLag1", slideBy = -1) 
+
+# removing the seasonality from x_t
+for (i in 1:length(t)){
+  if (!is.na(df_temperature_main$x_t[i]) & !is.na(df_temperature_main$xtLag1[i])){
+    df_temperature_main$y_t[i] <- df_temperature_main$x_t[i] - df_temperature_main$xtLag1[i]
+  }
+  else{
+    df_temperature_main$y_t[i] <- NA
+  }
+}
+
+y_t <- df_temperature_main$y_t
+t <- df_temperature_main$t
+
+# Plot z_t after removing the trend in y_t
+df_temperature_main <- slide(df_temperature_main,"y_t", "t", NewVar="ytLag1", slideBy = -1)
+
+# removing the trend in y_t
+for (i in 1:length(t)){
+  df_temperature_main$z_t[i] <- df_temperature_main$y_t[i] - df_temperature_main$ytLag1[i]
+}
+
+# plot zt vs t
+z_t <- df_temperature_main$z_t
+t <- df_temperature_main$t
+plot(t, z_t, type = "l", col= colors()[30],main="Detrended and deseasonalized \nTemperature Data", xlab="Time, t", ylab="z_t")
+
+#Get the ACF and PACF
+zt_acf <- df_temperature_main$z_t[3:length(t)]
+acf (zt_acf, lag.max = length(t), type=c("correlation"),plot=TRUE, main = "Sample Autocorrelation Function \nof the Temperature Data") 
+pacf (zt_acf, lag = length(zt_acf) - 1, plot = TRUE, main = "Sample Partial Autocorrelation Function \nof the Temperature Data")
+
+# estimate model and calculate aic & aicc
+arimaModel3_1 <- forecast::auto.arima(df_temperature_main$x_t, d = NA, D = NA, max.p = 5, max.q = 5, max.P = 2, max.Q = 2, max.order = 5, max.d = 2, max.D = 1, start.p = 2, start.q = 2, start.P = 1, start.Q = 1, stationary = FALSE, seasonal = TRUE, ic = c("aicc", "aic","bic"))
+
+arimaModel3_1
+
+cf <- coef(arimaModel3_1)
+arimaModel31_residuals <- residuals(arimaModel3_1)
+acf (arimaModel31_residuals, lag.max = length(t), type=c("correlation"),na.action=na.pass,plot=TRUE, main = "Sample Autocorrelation Function \nof the residual Data")
+
+#second model
+arimaModel3_2 <-forecast::auto.arima(df_temperature_main$x_t, d = NA, D = NA, max.p = 5, max.q = 25, max.P = 2, max.Q = 2, max.order = 100, max.d = 2, max.D = 1, start.p = 2, start.q = 12, start.P = 1, start.Q = 1, stationary = FALSE, seasonal = TRUE, ic = c("aicc", "aic","bic"))
+
+arimaModel3_2
+
+cf <- coef(arimaModel3_2)
+arimaModel32_residuals <- residuals(arimaModel3_2)
+acf (arimaModel32_residuals, lag.max = length(t), type=c("correlation"),na.action=na.pass,plot=TRUE, main = "Sample Autocorrelation Function \nof the residual Data")
+
+#-------------------------------------------------------------------
+# END OF PROBLEM #2
+#-------------------------------------------------------------------
+
+```
